@@ -11,6 +11,14 @@
     {
       "role": "assistant",
       "content": "Halo! Selamat datang di FinAssistant. Ada yang bisa saya bantu terkait pencatatan keuangan atau laporan pengeluaran Anda hari ini? 😊"
+    },
+    {
+      "role": "user",
+      "content": "halpo"
+    },
+    {
+      "role": "assistant",
+      "content": "Halo juga! Ada yang bisa FinAssistant bantu? Jangan ragu untuk sampaikan jika Anda ingin mencatat pengeluaran, melihat laporan, atau ada pertanyaan lainnya ya. 😊"
     }
   ]
 }

@@ -52,6 +52,10 @@ Pipeline di `Jenkinsfile`:
 
 Sesuaikan nama image di `Jenkinsfile` (`IMAGE_NAME`).
 
+Parameter tambahan:
+- `ENABLE_GEMINI` (boolean): aktifkan integrasi Gemini saat build (butuh `GEMINI_API_KEY` saat run/deploy)
+- `GEMINI_MODEL` (string): model Gemini yang digunakan (default `gemini-2.5-flash`)
+
 ## Endpoint API (ringkas)
 - `POST /api/chat` body `{ history, sessionId }` → balasan `{ text }` dan riwayat disimpan.
 - `GET /api/quota` → `{ remaining, limit }` (sisa kuota IP hari ini).
@@ -60,3 +64,21 @@ Sesuaikan nama image di `Jenkinsfile` (`IMAGE_NAME`).
 ## Catatan
 - Rate limit mengandalkan IP. Di balik reverse proxy, pastikan header `x-forwarded-for` diteruskan.
 - Simpan data ke volume saat deploy (mount ke `/app/data`) agar tidak hilang saat container di‑restart.
+Bila ingin mengaktifkan Gemini (AI):
+
+Build image dengan argumen opsional:
+
+```
+docker build --build-arg ENABLE_GEMINI=true --build-arg GEMINI_MODEL=gemini-2.5-flash -t chatbot .
+```
+
+Jalankan container dengan environment:
+
+```
+docker run --rm -p 8787:8787 \
+  -e ENABLE_GEMINI=true \
+  -e GEMINI_API_KEY=your_key \
+  -e MAX_REQUESTS_PER_DAY=5 \
+  -v $(pwd)/data:/app/data \
+  chatbot
+```

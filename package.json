@@ -11,6 +11,7 @@
     "dev:all": "bash -c \"trap 'kill 0' EXIT; npm run server & npm run dev\""
   },
   "dependencies": {
+    "@google/genai": "^1.29.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "9",

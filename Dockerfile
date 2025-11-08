@@ -23,13 +23,19 @@ COPY --from=builder /app/dist ./dist
 RUN addgroup -S app && adduser -S app -G app
 USER app
 
+# Optional build-time args to set defaults (can be overridden at runtime)
+ARG ENABLE_GEMINI=false
+ARG GEMINI_MODEL=gemini-2.5-flash
+ARG MAX_REQUESTS_PER_DAY=5
+
 ENV PORT=8787 \
     STATIC_DIR=/app/dist \
     COUNTERS_FILE=/app/data/rate-counters.json \
     DB_FILE=/app/data/chat-db.json \
-    MAX_REQUESTS_PER_DAY=5
+    ENABLE_GEMINI=${ENABLE_GEMINI} \
+    GEMINI_MODEL=${GEMINI_MODEL} \
+    MAX_REQUESTS_PER_DAY=${MAX_REQUESTS_PER_DAY}
 
 EXPOSE 8787
 
 ENTRYPOINT ["node", "server/index.js"]
-
