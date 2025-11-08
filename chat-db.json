@@ -1,0 +1,16 @@
+{
+  "e82446e1-6aa0-4d32-b6e8-27480658034b": [
+    {
+      "role": "assistant",
+      "content": "Halo! Saya FinAssistant, asisten keuangan pribadi Anda. Ada yang bisa saya bantu dengan pencatatan transaksi atau laporan keuangan hari ini?"
+    },
+    {
+      "role": "user",
+      "content": "hi"
+    },
+    {
+      "role": "assistant",
+      "content": "Halo! Selamat datang di FinAssistant. Ada yang bisa saya bantu terkait pencatatan keuangan atau laporan pengeluaran Anda hari ini? 😊"
+    }
+  ]
+}

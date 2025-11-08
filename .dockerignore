@@ -1,0 +1,12 @@
+node_modules
+.git
+npm-debug.log*
+.DS_Store
+.env
+.env.local
+rate-counters.json
+chat-db.json
+.vscode
+.idea
+coverage
+
