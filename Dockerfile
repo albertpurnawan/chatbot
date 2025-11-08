@@ -14,7 +14,12 @@ RUN npm run build
 FROM node:20-alpine AS runtime
 WORKDIR /app
 
-# Copy server (no external deps required)
+# Copy package metadata and production deps
+COPY package*.json ./
+# Reuse node_modules from builder to ensure @google/genai is present
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy server (runtime code)
 COPY server ./server
 # Copy built frontend
 COPY --from=builder /app/dist ./dist
