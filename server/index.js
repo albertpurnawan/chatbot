@@ -111,14 +111,19 @@ const getClientIp = (req) => {
   return req.socket?.remoteAddress || 'unknown';
 };
 
+const CORS_ALLOW_ORIGIN = process.env.CORS_ALLOW_ORIGIN || '*';
+const CORS_ALLOW_METHODS = process.env.CORS_ALLOW_METHODS || 'GET, HEAD, POST, OPTIONS';
+const CORS_ALLOW_HEADERS = process.env.CORS_ALLOW_HEADERS || 'Content-Type';
+
 const allowCORS = (res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Origin', CORS_ALLOW_ORIGIN);
+  res.setHeader('Access-Control-Allow-Methods', CORS_ALLOW_METHODS);
+  res.setHeader('Access-Control-Allow-Headers', CORS_ALLOW_HEADERS);
 };
 
 // Static file serving (production)
 const STATIC_DIR = process.env.STATIC_DIR || path.resolve(process.cwd(), 'dist');
+const STATIC_INDEX = process.env.STATIC_INDEX || 'index.html';
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -137,13 +142,13 @@ const serveStatic = (req, res) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return false;
     let urlPath = req.url.split('?')[0];
     if (urlPath.startsWith('/api/')) return false; // API handled elsewhere
-    if (urlPath === '/') urlPath = '/index.html';
+    if (urlPath === '/') urlPath = `/${STATIC_INDEX}`;
     const safeSegs = urlPath.split('/').filter(Boolean).filter(s => s !== '..');
     const filePath = path.join(STATIC_DIR, ...safeSegs);
     if (!filePath.startsWith(STATIC_DIR)) return false;
     if (!fs.existsSync(filePath)) {
       // SPA fallback to index.html
-      const indexPath = path.join(STATIC_DIR, 'index.html');
+      const indexPath = path.join(STATIC_DIR, STATIC_INDEX);
       if (!fs.existsSync(indexPath)) return false;
       const buf = fs.readFileSync(indexPath);
       res.writeHead(200, { 'Content-Type': MIME['.html'], 'Content-Length': buf.length });

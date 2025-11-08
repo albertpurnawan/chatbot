@@ -18,11 +18,13 @@ Sederhana, praktis, dan siap dipakai. Proyek ini adalah aplikasi chatbot berbasi
 1. Install dependencies: `npm install`
 2. (Opsional) Buat `.env.local` atau `.env` di root dengan konfigurasi:
    - `MAX_REQUESTS_PER_DAY` batas harian (default 5)
-   - `PORT` port server API (default 8787)
+   - `PORT` port server API (default 8787). Bisa override juga via argumen CLI `--port` / `-p` saat menjalankan server secara manual.
    - `VITE_DEV_PORT` port dev server Vite (default 3000)
    - `VITE_API_PORT` port API untuk proxy Vite (default 8787, fallback ke `PORT`)
    - `COUNTERS_FILE` file penyimpan hit harian (default `rate-counters.json`)
    - `DB_FILE` file penyimpan chat (default `chat-db.json`)
+   - `CORS_ALLOW_ORIGIN` origin CORS (default `*`), `CORS_ALLOW_METHODS` (default `GET, HEAD, POST, OPTIONS`), `CORS_ALLOW_HEADERS` (default `Content-Type`)
+   - `STATIC_DIR` direktori file statis (default `dist`), `STATIC_INDEX` nama file index (default `index.html`)
 3. Jalankan:
    - Opsi A: `npm run dev:all` (menjalankan server + Vite bersama)
    - Opsi B: `npm run server` dan `npm run dev` di dua terminal

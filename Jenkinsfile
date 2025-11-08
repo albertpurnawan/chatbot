@@ -2,11 +2,11 @@ pipeline {
   agent any
 
   environment {
-    REGISTRY = credentials('docker-registry-cred')
-    IMAGE_NAME = 'your-docker-user/finance-assistant-chatbot'
+    IMAGE_NAME = 'albertpurnawan/chatbot'
     IMAGE_TAG = "${env.BUILD_NUMBER}"
-    ENABLE_GEMINI = "${params.ENABLE_GEMINI ?: 'false'}"
-    GEMINI_MODEL = "${params.GEMINI_MODEL ?: 'gemini-2.5-flash'}"
+    ENABLE_GEMINI = 'false'
+    GEMINI_MODEL = 'gemini-2.5-flash'
+    DOCKER_PUSH = 'false'
   }
 
   options {
@@ -21,17 +21,7 @@ pipeline {
       }
     }
 
-    stage('Install') {
-      steps {
-        sh 'npm ci --no-audit --no-fund'
-      }
-    }
-
-    stage('Build (frontend)') {
-      steps {
-        sh 'npm run build'
-      }
-    }
+    // Dockerfile builds the frontend; no pre-build steps needed here
 
     stage('Docker Build') {
       steps {
@@ -52,8 +42,3 @@ pipeline {
     }
   }
 }
-  parameters {
-    booleanParam(name: 'DOCKER_PUSH', defaultValue: false, description: 'Push image to Docker registry')
-    booleanParam(name: 'ENABLE_GEMINI', defaultValue: false, description: 'Enable Gemini in runtime (requires GEMINI_API_KEY at deploy)')
-    string(name: 'GEMINI_MODEL', defaultValue: 'gemini-2.5-flash', description: 'Gemini model to use when enabled')
-  }
