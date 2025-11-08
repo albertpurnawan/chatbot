@@ -15,7 +15,7 @@ pipeline {
     PORT_CONTAINER_chatbot = "${env.PORT_CONTAINER_chatbot ?: '8787'}"
     ENABLE_GEMINI_chatbot = "${env.ENABLE_GEMINI_chatbot ?: 'false'}"
     GEMINI_MODEL_chatbot = "${env.GEMINI_MODEL_chatbot ?: 'gemini-2.5-flash'}"
-    GEMINI_API_KEY_chatbot = "${env.GEMINI_API_KEY_chatbot ?: ''}"
+    GEMINI_API_KEY_chatbot = credentials('GEMINI_API_KEY_chatbot')
     MAX_REQUESTS_PER_DAY_chatbot = "${env.MAX_REQUESTS_PER_DAY_chatbot ?: '5'}"
     DATA_DIR_chatbot = "${env.DATA_DIR_chatbot ?: '/var/lib/chatbot/data'}"
   }
@@ -58,30 +58,28 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        withCredentials([string(credentialsId: 'gemini-api-key-chatbot', variable: 'GEMINI_API_KEY_chatbot')]) {
-          withEnv(["DOCKER_CONFIG=${WORKSPACE}/.docker"]) {
-            sh '''
-            set -eu
-            mkdir -p "$DOCKER_CONFIG"
-            IMAGE_REF="$IMAGE_NAME_chatbot"
-            case "$IMAGE_REF" in
-              *:*) ;;
-              *) IMAGE_REF="$IMAGE_REF:$IMAGE_TAG_chatbot" ;;
-            esac
-            echo "[deploy] Using image tag: $IMAGE_REF"
-            docker rm -f ${CONTAINER_NAME_chatbot} || true
-            docker run -d \
-              --name ${CONTAINER_NAME_chatbot} \
-              -p ${PORT_HOST_chatbot}:${PORT_CONTAINER_chatbot} \
-              -e PORT=${PORT_CONTAINER_chatbot} \
-              -e MAX_REQUESTS_PER_DAY=${MAX_REQUESTS_PER_DAY_chatbot} \
-              -e ENABLE_GEMINI=${ENABLE_GEMINI_chatbot} \
-              -e GEMINI_MODEL=${GEMINI_MODEL_chatbot} \
-              -e GEMINI_API_KEY=${GEMINI_API_KEY_chatbot} \
-              -v ${DATA_DIR_chatbot}:/app/data \
-              "$IMAGE_REF"
-            '''
-          }
+        withEnv(["DOCKER_CONFIG=${WORKSPACE}/.docker"]) {
+          sh '''
+          set -eu
+          mkdir -p "$DOCKER_CONFIG"
+          IMAGE_REF="$IMAGE_NAME_chatbot"
+          case "$IMAGE_REF" in
+            *:*) ;;
+            *) IMAGE_REF="$IMAGE_REF:$IMAGE_TAG_chatbot" ;;
+          esac
+          echo "[deploy] Using image tag: $IMAGE_REF"
+          docker rm -f ${CONTAINER_NAME_chatbot} || true
+          docker run -d \
+            --name ${CONTAINER_NAME_chatbot} \
+            -p ${PORT_HOST_chatbot}:${PORT_CONTAINER_chatbot} \
+            -e PORT=${PORT_CONTAINER_chatbot} \
+            -e MAX_REQUESTS_PER_DAY=${MAX_REQUESTS_PER_DAY_chatbot} \
+            -e ENABLE_GEMINI=${ENABLE_GEMINI_chatbot} \
+            -e GEMINI_MODEL=${GEMINI_MODEL_chatbot} \
+            -e GEMINI_API_KEY=${GEMINI_API_KEY_chatbot} \
+            -v ${DATA_DIR_chatbot}:/app/data \
+            "$IMAGE_REF"
+          '''
         }
       }
     }
