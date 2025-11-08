@@ -4,18 +4,6 @@ pipeline {
       image 'node:20'
       args '-v /var/run/docker.sock:/var/run/docker.sock'
       reuseNode true
-      environment {
-        IMAGE_NAME_chatbot = "${env.IMAGE_NAME_chatbot}"
-        IMAGE_TAG_chatbot = "${env.IMAGE_TAG_chatbot}"
-        CONTAINER_NAME_chatbot = "${env.CONTAINER_NAME_chatbot}"
-        PORT_HOST_chatbot = "${env.PORT_HOST_chatbot}"
-        PORT_CONTAINER_chatbot = "${env.PORT_CONTAINER_chatbot}"
-        ENABLE_GEMINI_chatbot = "${env.ENABLE_GEMINI_chatbot}"
-        GEMINI_MODEL_chatbot = "${env.GEMINI_MODEL_chatbot}"
-        GEMINI_API_KEY_chatbot = "${env.GEMINI_API_KEY_chatbot}"
-        MAX_REQUESTS_PER_DAY_chatbot = "${env.MAX_REQUESTS_PER_DAY_chatbot}"
-        DATA_DIR_chatbot = "${env.DATA_DIR_chatbot}"
-      }
     }
   }
 
