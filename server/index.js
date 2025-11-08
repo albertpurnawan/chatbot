@@ -113,7 +113,7 @@ const getClientIp = (req) => {
 
 const allowCORS = (res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 };
 
@@ -134,7 +134,7 @@ const MIME = {
 
 const serveStatic = (req, res) => {
   try {
-    if (req.method !== 'GET') return false;
+    if (req.method !== 'GET' && req.method !== 'HEAD') return false;
     let urlPath = req.url.split('?')[0];
     if (urlPath.startsWith('/api/')) return false; // API handled elsewhere
     if (urlPath === '/') urlPath = '/index.html';
@@ -145,14 +145,16 @@ const serveStatic = (req, res) => {
       // SPA fallback to index.html
       const indexPath = path.join(STATIC_DIR, 'index.html');
       if (!fs.existsSync(indexPath)) return false;
-      res.writeHead(200, { 'Content-Type': MIME['.html'] });
-      res.end(fs.readFileSync(indexPath));
+      const buf = fs.readFileSync(indexPath);
+      res.writeHead(200, { 'Content-Type': MIME['.html'], 'Content-Length': buf.length });
+      if (req.method === 'HEAD') { res.end(); } else { res.end(buf); }
       return true;
     }
     const ext = path.extname(filePath).toLowerCase();
     const type = MIME[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': type });
-    res.end(fs.readFileSync(filePath));
+    const buf = fs.readFileSync(filePath);
+    res.writeHead(200, { 'Content-Type': type, 'Content-Length': buf.length });
+    if (req.method === 'HEAD') { res.end(); } else { res.end(buf); }
     return true;
   } catch (e) {
     return false;
