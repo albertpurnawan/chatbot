@@ -32,8 +32,9 @@ USER app
 ARG ENABLE_GEMINI=false
 ARG GEMINI_MODEL=gemini-2.5-flash
 ARG MAX_REQUESTS_PER_DAY=5
+ARG PORT=8787
 
-ENV PORT=8787 \
+ENV PORT=${PORT} \
     STATIC_DIR=/app/dist \
     COUNTERS_FILE=/app/data/rate-counters.json \
     DB_FILE=/app/data/chat-db.json \
@@ -41,6 +42,6 @@ ENV PORT=8787 \
     GEMINI_MODEL=${GEMINI_MODEL} \
     MAX_REQUESTS_PER_DAY=${MAX_REQUESTS_PER_DAY}
 
-EXPOSE 8787
+EXPOSE ${PORT}
 
 ENTRYPOINT ["node", "server/index.js"]

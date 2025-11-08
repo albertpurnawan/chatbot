@@ -28,7 +28,25 @@ const loadEnvFile = (filename) => {
 loadEnvFile('.env.local');
 loadEnvFile('.env');
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 8787;
+const parsePortArg = () => {
+  try {
+    const args = process.argv.slice(2);
+    for (let i = 0; i < args.length; i++) {
+      const a = args[i];
+      if (a.startsWith('--port=')) {
+        const v = Number(a.split('=')[1]);
+        if (Number.isFinite(v) && v > 0) return v;
+      }
+      if (a === '--port' || a === '-p') {
+        const next = Number(args[i + 1]);
+        if (Number.isFinite(next) && next > 0) return next;
+      }
+    }
+  } catch {}
+  return null;
+};
+
+const PORT = Number(process.env.PORT) > 0 ? Number(process.env.PORT) : (parsePortArg() ?? 8787);
 const MAX_PER_DAY = process.env.MAX_REQUESTS_PER_DAY ? Math.max(1, Number(process.env.MAX_REQUESTS_PER_DAY)) : 5;
 const ENABLE_GEMINI = String(process.env.ENABLE_GEMINI || '').toLowerCase() === 'true';
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';

@@ -18,19 +18,21 @@ Sederhana, praktis, dan siap dipakai. Proyek ini adalah aplikasi chatbot berbasi
 1. Install dependencies: `npm install`
 2. (Opsional) Buat `.env.local` atau `.env` di root dengan konfigurasi:
    - `MAX_REQUESTS_PER_DAY` batas harian (default 5)
-   - `PORT` port server (default 8787)
+   - `PORT` port server API (default 8787)
+   - `VITE_DEV_PORT` port dev server Vite (default 3000)
+   - `VITE_API_PORT` port API untuk proxy Vite (default 8787, fallback ke `PORT`)
    - `COUNTERS_FILE` file penyimpan hit harian (default `rate-counters.json`)
    - `DB_FILE` file penyimpan chat (default `chat-db.json`)
 3. Jalankan:
    - Opsi A: `npm run dev:all` (menjalankan server + Vite bersama)
    - Opsi B: `npm run server` dan `npm run dev` di dua terminal
 
-UI tersedia di `http://localhost:3000` (dev) dengan proxy ke API `http://localhost:8787`.
+UI tersedia di `http://localhost:${VITE_DEV_PORT||3000}` (dev) dengan proxy ke API `http://localhost:${VITE_API_PORT||PORT||8787}`.
 
 ## Produksi (tanpa Docker)
 1. Build frontend: `npm run build`
 2. Jalankan server: `npm run server`
-3. Aplikasi dilayani dari port `PORT` (default `8787`).
+3. Aplikasi dilayani dari port `PORT` (default `8787`). Anda juga bisa memberi argumen CLI: `node server/index.js --port 9000` atau `-p 9000`.
 
 ## Docker
 Build dan jalankan lokal:
@@ -44,6 +46,33 @@ docker run --rm -p 8787:8787 \
 ```
 
 Buka `http://localhost:8787`.
+
+### Otomasi setup di server (script)
+
+Gunakan script `scripts/setup_server.sh` untuk build & run container di server dengan konfigurasi yang sama seperti lokal.
+
+Contoh pemakaian:
+
+```
+# Tanpa AI
+PORT=8787 MAX_PER_DAY=5 DATA_DIR=/opt/chatbot/data \
+  ./scripts/setup_server.sh
+
+# Dengan Gemini
+PORT=8787 MAX_PER_DAY=5 ENABLE_GEMINI=true GEMINI_API_KEY=your_key \
+  GEMINI_MODEL=gemini-2.5-flash DATA_DIR=/opt/chatbot/data \
+  ./scripts/setup_server.sh
+```
+
+Variabel yang tersedia:
+- `IMAGE_NAME` (default `chatbot`)
+- `IMAGE_TAG` (default `latest`)
+- `PORT` (default `8787`)
+- `DATA_DIR` (default `./data` pada direktori proyek; pastikan writable)
+- `MAX_PER_DAY` (default `5`)
+- `ENABLE_GEMINI` (`true|false`, default `false`)
+- `GEMINI_API_KEY` (wajib bila `ENABLE_GEMINI=true`)
+- `GEMINI_MODEL` (default `gemini-2.5-flash`)
 
 ## Jenkins (opsional)
 Pipeline di `Jenkinsfile`:
